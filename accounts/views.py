@@ -29,6 +29,7 @@ def login_page(request):
 #   return render(request, "accounts/auth.html")
 
 class SignUpView(APIView):
+  authentication_classes = []  # No authentication needed for signup
   permission_classes = [AllowAny]  # Allow anyone to sign up
   
   def post(self, request):
@@ -41,6 +42,7 @@ class SignUpView(APIView):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LoginView(APIView):
+  authentication_classes = []  # No authentication needed for login
   permission_classes = [AllowAny]  # Allow anyone to login
   
   def post(self, request):
@@ -58,7 +60,6 @@ class LoginView(APIView):
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@method_decorator(csrf_exempt, name="dispatch")
 class LogoutView(APIView):
   authentication_classes = [TokenAuthentication]
 

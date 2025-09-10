@@ -24,6 +24,7 @@ integrations = ["python_database:1.0.0"]
 
 [nix]
 packages = ["redis"]
+channel = "stable-25_05"
 
 [workflows]
 runButton = "Project"

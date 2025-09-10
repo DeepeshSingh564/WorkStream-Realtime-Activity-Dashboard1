@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'activity',
     'channels',
+    'corsheaders',
     'rest_framework.authtoken',
     'accounts',
 ]
@@ -97,6 +98,7 @@ except Exception as e:
 
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -104,6 +106,19 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+# CORS settings for API requests
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5000",
+    "http://127.0.0.1:5000",
+]
+
+# CSRF trusted origins
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5000",
+    "http://127.0.0.1:5000",
 ]
 
 # Allow CSRF for Replit domains

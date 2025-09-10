@@ -24,7 +24,7 @@ from django.http import HttpResponse
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('activity.urls')),
-    path('api/', include('accounts.urls')),  # Account API endpoints (signup, login, logout)
+    path('api/', include('accounts.api_urls')),  # Account API endpoints (signup, login, logout)
     path("activity/", include("activity.urls")),  # Activity pages (dashboard, etc)
     path('api-auth/', include('rest_framework.urls')),
     path("", include("accounts.urls")),  # Account pages (signup page, login page, home)
