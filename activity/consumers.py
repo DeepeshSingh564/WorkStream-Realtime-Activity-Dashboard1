@@ -15,7 +15,8 @@ class ActivityConsumer(AsyncWebsocketConsumer):
         if not user or not user.is_authenticated:
             await self.send(text_data=json.dumps({
                 "type": "connection",
-                "message": "Connected - authentication required for real-time updates"
+                "message": "Connected - authentication required for real-time updates",
+                "authenticated": False
             }))
             self.user = None
             self.group_name = None
@@ -26,24 +27,27 @@ class ActivityConsumer(AsyncWebsocketConsumer):
 
         print(f"✅ WebSocket connected for user {user.username}", file=sys.stderr, flush=True)
 
-        # Join per-user group
-        await self.channel_layer.group_add(self.group_name, self.channel_name)
+        # Join per-user group only if channel_layer exists
+        if self.channel_layer:
+            await self.channel_layer.group_add(self.group_name, self.channel_name)
 
         # Send welcome/system message
         await self.send(text_data=json.dumps({
             "type": "connection",
-            "message": f"Connected to activity log as {user.username}"
+            "message": f"Connected to activity log as {user.username}",
+            "authenticated": True
         }))
 
-    async def disconnect(self, close_code):
-        if hasattr(self, "group_name"):
+    async def disconnect(self, code):
+        if hasattr(self, "group_name") and self.group_name and self.channel_layer:
             await self.channel_layer.group_discard(self.group_name, self.channel_name)
 
     async def activity_message(self, event):
         # Event sent from views.perform_create
-        print(f"📡 Sending activity to {self.user.username}", file=sys.stderr, flush=True)
+        if self.user:
+            print(f"📡 Sending activity to {self.user.username}", file=sys.stderr, flush=True)
 
-        await self.send(text_data=json.dumps({
-            "type": "activity",
-            "data": event["data"]
-        }))
+            await self.send(text_data=json.dumps({
+                "type": "activity",
+                "data": event["data"]
+            }))

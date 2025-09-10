@@ -46,7 +46,8 @@
         return localStorage.getItem(tokenKey);
     }
 
-    if (!getToken()) {
+    const currentToken = getToken();
+    if (!currentToken || currentToken === 'null') {
         alert("⚠️ Please log in first!");
         window.location.href = "/login/"; // redirect to login page
     }
@@ -92,7 +93,7 @@
     // ✅ WebSocket for real-time updates
     const ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
     const chatSocket = new WebSocket(
-        ws_scheme + '://' + window.location.host + '/ws/activities/'
+        ws_scheme + '://' + window.location.host + '/ws/activities/?token=' + currentToken
     );
 
     chatSocket.onopen = () => {
@@ -103,18 +104,23 @@
         console.error("❌ WebSocket error:", e);
     };
 
+    chatSocket.onclose = (e) => {
+        console.log("🔌 WebSocket closed:", e);
+    };
+
     chatSocket.onmessage = function(event) {
-        console.log("WebSocket raw:", event.data);
+        console.log("📨 WebSocket message:", event.data);
         try {
             const msg = JSON.parse(event.data);
 
             if (msg.type === "activity") {
+                console.log("🎯 New activity received:", msg.data);
                 addRow(msg.data);
-            } else if (msg.type === "system") {
-                console.log("System message:", msg.message);
+            } else if (msg.type === "connection") {
+                console.log("🔗 Connection status:", msg.message, "Authenticated:", msg.authenticated);
             }
         } catch (e) {
-            console.error("Error parsing WebSocket message:", e);
+            console.error("❌ Error parsing WebSocket message:", e);
         }
     };
 
