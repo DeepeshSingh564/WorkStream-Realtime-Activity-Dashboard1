@@ -29,6 +29,8 @@ def login_page(request):
 
 @method_decorator(csrf_exempt, name="dispatch")
 class SignUpView(APIView):
+  permission_classes = []  # Allow anyone to sign up
+  
   def post(self, request):
     serializer = UserSignUpSerializer(data=request.data)
     if serializer.is_valid():
@@ -40,6 +42,8 @@ class SignUpView(APIView):
 
 @method_decorator(csrf_exempt, name="dispatch")
 class LoginView(APIView):
+  permission_classes = []  # Allow anyone to login
+  
   def post(self, request):
     serializer = UserLoginSerializer(data=request.data)
     if serializer.is_valid():
