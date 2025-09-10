@@ -6,11 +6,17 @@ from channels.db import database_sync_to_async
 
 class ActivityConsumer(AsyncWebsocketConsumer):
     async def connect(self):
+        # Accept connection first, then handle authentication
+        await self.accept()
+        
         user = self.scope.get("user", None)
 
-        # If not authenticated, reject connection
+        # If not authenticated, send error message but don't close
         if not user or not user.is_authenticated:
-            await self.close()
+            await self.send(text_data=json.dumps({
+                "type": "error",
+                "message": "Authentication required. Please log in."
+            }))
             return
 
         self.user = user

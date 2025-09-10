@@ -66,12 +66,32 @@ ASGI_APPLICATION = 'django_project.asgi.application'
 # settings.py
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
-        },
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
     },
 }
+
+# Use Redis if available, fallback to InMemory
+try:
+    import redis
+    r = redis.Redis(host='127.0.0.1', port=6379, decode_responses=True)
+    r.ping()
+    # If Redis is available, use it
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {
+                "hosts": [("127.0.0.1", 6379)],
+            },
+        },
+    }
+    print("✅ Using Redis for channels")
+except Exception as e:
+    print(f"⚠️ Redis not available ({e}), using InMemory channels")
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels.layers.InMemoryChannelLayer",
+        },
+    }
 
 
 
