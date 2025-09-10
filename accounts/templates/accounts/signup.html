@@ -6,9 +6,14 @@
 </head>
 <body>
   <h2>Sign Up</h2>
+  {% csrf_token %}
   <form id="signupForm">
-      <label>Username
+      <label>Username:
         <input type="text"  id="username" required><br><br>
+      </label><br>
+      
+      <label>Email:
+        <input type="email" id="email" required><br><br>
       </label><br>
       
       <label>Password:
@@ -25,12 +30,19 @@
       e.preventDefault();
 
       const username = document.getElementById("username").value;
+      const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
+
+      // Get CSRF token
+      const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
 
       const response = await fetch("/api/signup/", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password })
+        headers: { 
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrfToken
+        },
+        body: JSON.stringify({ username, email, password })
       });
 
       if (response.ok) {

@@ -7,6 +7,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.authentication import TokenAuthentication
 from .serializers import UserSignUpSerializer, UserLoginSerializer
 from rest_framework.views import APIView
+from rest_framework.permissions import AllowAny
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 
@@ -27,9 +28,8 @@ def login_page(request):
 # def auth_page(request):
 #   return render(request, "accounts/auth.html")
 
-@method_decorator(csrf_exempt, name="dispatch")
 class SignUpView(APIView):
-  permission_classes = []  # Allow anyone to sign up
+  permission_classes = [AllowAny]  # Allow anyone to sign up
   
   def post(self, request):
     serializer = UserSignUpSerializer(data=request.data)
@@ -40,9 +40,8 @@ class SignUpView(APIView):
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@method_decorator(csrf_exempt, name="dispatch")
 class LoginView(APIView):
-  permission_classes = []  # Allow anyone to login
+  permission_classes = [AllowAny]  # Allow anyone to login
   
   def post(self, request):
     serializer = UserLoginSerializer(data=request.data)

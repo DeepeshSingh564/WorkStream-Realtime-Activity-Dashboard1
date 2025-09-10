@@ -86,8 +86,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# for API only — allow unsafe POST without CSRF
-CSRF_TRUSTED_ORIGINS = ["https://*.replit.dev"]
+# Allow CSRF for Replit domains
+CSRF_COOKIE_SECURE = False  # Set to True in production with HTTPS
+CSRF_COOKIE_HTTPONLY = False  # Allow JavaScript access to CSRF token
 
 # Only use clickjacking protection in deployments because the Development Web View uses
 # iframes and needs to be a cross origin.
