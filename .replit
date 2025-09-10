@@ -1,19 +1,22 @@
-run = ["python", "manage.py", "runserver", "0.0.0.0:3000"]
-entrypoint = "manage.py"
-modules = ["python-3.10:v18-20230807-322e88b"]
+modules = ["python-3.11"]
 
-hidden = [".pythonlibs"]
-
-[nix]
-channel = "stable-24_05"
-
-[unitTest]
-language = "python3"
+run = "redis-server --port 6379 & python3 -m daphne -b 0.0.0.0 -p 3000 django_project.asgi:application"
 
 [deployment]
-run = ["python", "manage.py", "runserver", "0.0.0.0:3000"]
+run = "redis-server --port 6379 & python3 -m daphne -b 0.0.0.0 -p 3000 django_project.asgi:application"
 deploymentTarget = "gce"
 
 [[ports]]
 localPort = 3000
 externalPort = 80
+
+[[ports]]
+localPort = 6379
+externalPort = 6379
+
+[agent]
+expertMode = true
+integrations = ["python_database:1.0.0"]
+
+[nix]
+packages = ["redis"]

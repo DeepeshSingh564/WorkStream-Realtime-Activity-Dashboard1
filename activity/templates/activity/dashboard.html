@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Activity Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #333; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+        th { background: #f4f4f4; }
+        #activityForm { margin-top: 20px; }
+        #activityForm input { margin-right: 10px; padding: 5px; }
+        #activityForm button { padding: 6px 12px; }
+    </style>
+</head>
+<body>
+    <h1>Activity Dashboard</h1>
+
+    <!-- Form to log activity -->
+    <form id="activityForm">
+        <input type="text" id="activityName" placeholder="Activity name" required>
+        <input type="number" id="duration" placeholder="Duration (mins)" required>
+        <button type="submit">Add Activity</button>
+    </form>
+
+    <!-- Table for live activities -->
+    <table>
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Activity</th>
+                <th>Duration</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+        <tbody id="activityTable">
+        </tbody>
+    </table>
+
+    <script>
+    const tokenKey = "authToken";
+    const tableBody = document.getElementById("activityTable");
+
+    // ✅ Check if logged in before loading dashboard
+    function getToken() {
+        return localStorage.getItem(tokenKey);
+    }
+
+    if (!getToken()) {
+        alert("⚠️ Please log in first!");
+        window.location.href = "/accounts/auth.html"; // redirect to login/signup page
+    }
+
+    // 🔄 Load initial activities
+    async function loadActivities() {
+        const res = await fetch("/api/activities/", {
+            headers: {
+                "Authorization": "Token " + getToken()
+            }
+        });
+        const data = await res.json();
+        tableBody.innerHTML = "";
+        data.forEach(log => addRow(log));
+    }
+
+    // Add row to table
+    function addRow(log) {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${log.user}</td>
+            <td>${log.activity_name}</td>
+            <td>${log.duration}</td>
+            <td>${new Date(log.timestamp).toLocaleString()}</td>
+        `;
+        tableBody.prepend(row);
+    }
+
+    // ✅ WebSocket for real-time updates
+    const ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
+    const chatSocket = new WebSocket(
+        ws_scheme + '://' + window.location.host + '/ws/activities/'
+    );
+
+    chatSocket.onopen = () => {
+        console.log("✅ WebSocket connected!");
+    };
+
+    chatSocket.onerror = (e) => {
+        console.error("❌ WebSocket error:", e);
+    };
+
+    chatSocket.onmessage = function(event) {
+        console.log("WebSocket raw:", event.data);
+        try {
+            const msg = JSON.parse(event.data);
+
+            if (msg.type === "activity") {
+                addRow(msg.data);
+            } else if (msg.type === "system") {
+                console.log("System message:", msg.message);
+            }
+        } catch (e) {
+            console.error("Error parsing WebSocket message:", e);
+        }
+    };
+
+    // ✅ Handle activity form submit
+    document.getElementById("activityForm").addEventListener("submit", async function(e) {
+        e.preventDefault();
+
+        const name = document.getElementById("activityName").value;
+        const duration = document.getElementById("duration").value;
+
+        const response = await fetch("/api/activities/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Token " + getToken()
+            },
+            body: JSON.stringify({ activity_name: name, duration: duration })
+        });
+
+        if (response.ok) {
+            document.getElementById("activityName").value = "";
+            document.getElementById("duration").value = "";
+            console.log("✅ Activity logged!");
+        } else {
+            console.error("❌ Failed to log activity", await response.text());
+        }
+    });
+
+    // 🔄 Initial load
+    loadActivities();
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sign Up</title>
+</head>
+<body>
+  <h2>Sign Up</h2>
+  <form id="signupForm">
+      <label>Username
+        <input type="text"  id="username" required><br><br>
+      </label><br>
+      
+      <label>Password:
+          <input type="password" id="password" required><br><br>
+        </label><br>
+
+    <button type="submit">Sign Up</button>
+  </form>
+
+  <p>Already have an account? <a href="/login/">Login here</a></p>
+
+  <script>
+    document.getElementById("signupForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+
+      const response = await fetch("/api/signup/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        alert("✅ Signup successful! Welcome, " + data.username);
+        localStorage.setItem("token", data.token); // save token
+        window.location.href = "/activity/dashboard/";
+      } else {
+        alert("❌ Signup failed: " + (await response.text()));
+      }
+    });
+  </script>
+</body>
+</html>

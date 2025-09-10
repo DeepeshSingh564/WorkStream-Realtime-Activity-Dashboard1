@@ -1,0 +1,65 @@
+<!-- templates/accounts/auth.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Auth</title>
+</head>
+<body>
+  <h1 id="form-title">Authentication</h1>
+
+  <form id="auth-form">
+    <input type="text" id="username" placeholder="Username" required><br>
+    <input type="password" id="password" placeholder="Password" required><br>
+    <button type="submit" id="submit-btn">Submit</button>
+  </form>
+
+  <p id="message"></p>
+
+  <script>
+    // Check mode from query string (?mode=signup or ?mode=login)
+    const params = new URLSearchParams(window.location.search);
+    const mode = params.get("mode") || "login";
+
+    const formTitle = document.getElementById("form-title");
+    const submitBtn = document.getElementById("submit-btn");
+
+    let endpoint = "/accounts/login/"; // default
+    if (mode === "signup") {
+      formTitle.innerText = "Sign Up";
+      endpoint = "/accounts/signup/";
+      submitBtn.innerText = "Sign Up";
+    } else {
+      formTitle.innerText = "Login";
+      endpoint = "/accounts/login/";
+      submitBtn.innerText = "Login";
+    }
+
+    document.getElementById("auth-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        // Save token for later use
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("username", data.username);
+
+        document.getElementById("message").innerText = "✅ Success! Redirecting...";
+        window.location.href = "/activity/dashboard/"; // redirect to dashboard
+      } else {
+        document.getElementById("message").innerText = "❌ " + (data.error || "Something went wrong");
+      }
+    });
+  </script>
+</body>
+</html>
+ -->

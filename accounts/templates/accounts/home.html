@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Welcome | Activity Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin-top: 100px; }
+        a { display: inline-block; margin: 20px; padding: 10px 20px; background: #4CAF50; color: white; text-decoration: none; border-radius: 5px; }
+        a:hover { background: #45a049; }
+    </style>
+</head>
+<body>
+    <h1>Welcome to Activity Dashboard!</h1>
+    <p>Track your activities in real time.</p>
+
+    <a href="{% url 'signup_page' %}?mode=signup">Sign Up</a>
+    <a href="{% url 'login_page' %}?mode=login">Login</a>
+</body>
+</html>
