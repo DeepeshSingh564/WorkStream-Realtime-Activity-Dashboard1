@@ -6,17 +6,19 @@ from channels.db import database_sync_to_async
 
 class ActivityConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        # Accept connection first, then handle authentication
+        # Accept connection first
         await self.accept()
         
         user = self.scope.get("user", None)
 
-        # If not authenticated, send error message but don't close
+        # If not authenticated, send error message but keep connection open
         if not user or not user.is_authenticated:
             await self.send(text_data=json.dumps({
-                "type": "error",
-                "message": "Authentication required. Please log in."
+                "type": "connection",
+                "message": "Connected - authentication required for real-time updates"
             }))
+            self.user = None
+            self.group_name = None
             return
 
         self.user = user
@@ -26,11 +28,10 @@ class ActivityConsumer(AsyncWebsocketConsumer):
 
         # Join per-user group
         await self.channel_layer.group_add(self.group_name, self.channel_name)
-        await self.accept()
 
         # Send welcome/system message
         await self.send(text_data=json.dumps({
-            "type": "system",
+            "type": "connection",
             "message": f"Connected to activity log as {user.username}"
         }))
 
