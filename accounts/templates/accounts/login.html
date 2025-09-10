@@ -6,6 +6,7 @@
 </head>
 <body>
   <h2>Login</h2>
+  {% csrf_token %}
   <form id="loginForm">
     <label>Username:</label><br>
     <input type="text" id="username" required><br><br>
@@ -25,9 +26,15 @@
       const username = document.getElementById("username").value;
       const password = document.getElementById("password").value;
 
+      // Get CSRF token
+      const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+
       const response = await fetch("/api/login/", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrfToken
+        },
         body: JSON.stringify({ username, password })
       });
 
