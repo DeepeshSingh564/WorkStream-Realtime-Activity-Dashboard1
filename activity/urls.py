@@ -13,5 +13,5 @@ urlpatterns = [
          name='activity-detail'),
     path("test/", views.activity_test, name="activity_test"),
     path("dashboard/", views.activity_dashboard, name="activity_dashboard"),
-    path("token/", obtain_auth_token, name="api_token")
+    path("token/", obtain_auth_token, name="api_token"), 
 ]
