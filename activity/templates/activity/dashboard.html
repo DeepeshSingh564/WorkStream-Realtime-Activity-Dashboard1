@@ -38,7 +38,7 @@
     </table>
 
     <script>
-    const tokenKey = "authToken";
+    const tokenKey = "token";
     const tableBody = document.getElementById("activityTable");
 
     // ✅ Check if logged in before loading dashboard
@@ -48,7 +48,7 @@
 
     if (!getToken()) {
         alert("⚠️ Please log in first!");
-        window.location.href = "/accounts/auth.html"; // redirect to login/signup page
+        window.location.href = "/login/"; // redirect to login page
     }
 
     // 🔄 Load initial activities
