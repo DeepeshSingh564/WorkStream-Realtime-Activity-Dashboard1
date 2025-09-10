@@ -53,14 +53,28 @@
 
     // 🔄 Load initial activities
     async function loadActivities() {
-        const res = await fetch("/api/activities/", {
-            headers: {
-                "Authorization": "Token " + getToken()
+        try {
+            const res = await fetch("/api/activities/", {
+                headers: {
+                    "Authorization": "Token " + getToken()
+                }
+            });
+            
+            if (res.ok) {
+                const data = await res.json();
+                tableBody.innerHTML = "";
+                // Ensure data is an array before calling forEach
+                if (Array.isArray(data)) {
+                    data.forEach(log => addRow(log));
+                } else {
+                    console.error("API returned non-array data:", data);
+                }
+            } else {
+                console.error("Failed to load activities:", res.status, await res.text());
             }
-        });
-        const data = await res.json();
-        tableBody.innerHTML = "";
-        data.forEach(log => addRow(log));
+        } catch (error) {
+            console.error("Error loading activities:", error);
+        }
     }
 
     // Add row to table
