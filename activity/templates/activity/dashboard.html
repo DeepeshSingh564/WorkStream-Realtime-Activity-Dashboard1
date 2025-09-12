@@ -1,157 +1,89 @@
+{% load static %}
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Activity Dashboard</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        h1 { color: #333; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
-        th { background: #f4f4f4; }
-        #activityForm { margin-top: 20px; }
-        #activityForm input { margin-right: 10px; padding: 5px; }
-        #activityForm button { padding: 6px 12px; }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WorkStream: Realtime Activity Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'activity/css/dashboard.css' %}">
 </head>
 <body>
-    <h1>Activity Dashboard</h1>
+    <div class="container-fluid py-4">
+        <header class="dashboard-header d-flex justify-content-between align-items-center mb-4 pb-3">
+            <div class="header-content">
+                <h1 class="header-title mb-1">WorkStream</h1>
+                <p class="subtitle m-0">Realtime Activity Dashboard</p>
+            </div>
+            <button id="logoutBtn" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                Logout
+            </button>
+        </header>
 
-    <!-- Form to log activity -->
-    <form id="activityForm">
-        <input type="text" id="activityName" placeholder="Activity name" required>
-        <input type="number" id="duration" placeholder="Duration (mins)" required>
-        <button type="submit">Add Activity</button>
-    </form>
+        <div class="row">
+            <div class="col-lg-4 col-md-5 mb-4">
+                <div class="glass-card p-4 h-100">
+                    <h2 class="mb-4">Log New Activity</h2>
+                    <form id="activityForm">
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="activityName" placeholder=" " required>
+                            <label class="form-label" for="activityName">Activity name</label>
+                        </div>
+                        <div class="form-group">
+                            <input type="number" class="form-control" id="duration" placeholder=" " required>
+                            <label class="form-label" for="duration">Duration (minutes)</label>
+                        </div>
+                        <button type="submit" class="submit-btn">
+                            <i class="fas fa-plus-circle"></i>
+                            Add Activity
+                        </button>
+                    </form>
+                </div>
+            </div>
 
-    <!-- Table for live activities -->
-    <table>
-        <thead>
-            <tr>
-                <th>User</th>
-                <th>Activity</th>
-                <th>Duration</th>
-                <th>Timestamp</th>
-            </tr>
-        </thead>
-        <tbody id="activityTable">
-        </tbody>
-    </table>
+            <div class="col-lg-8 col-md-7">
+                <div class="glass-card p-4 h-100">
+                    <div class="table-header">
+                        <h2>Live Activities</h2>
+                        <div class="table-controls">
+                            <span id="activityCount">0 activities</span>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>User</th>
+                                        <th>Activity</th>
+                                        <th>Duration</th>
+                                        <th>Timestamp</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="activityTable">
+                                    <!-- Activities will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <script>
-    const tokenKey = "token";
-    const tableBody = document.getElementById("activityTable");
-
-    // ✅ Check if logged in before loading dashboard
-    function getToken() {
-        return localStorage.getItem(tokenKey);
-    }
-
-    const currentToken = getToken();
-    if (!currentToken || currentToken === 'null') {
-        alert("⚠️ Please log in first!");
-        window.location.href = "/login/"; // redirect to login page
-    }
-
-    // 🔄 Load initial activities
-    async function loadActivities() {
-        try {
-            const res = await fetch("/api/activities/", {
-                headers: {
-                    "Authorization": "Token " + getToken()
-                }
-            });
-            
-            if (res.ok) {
-                const data = await res.json();
-                tableBody.innerHTML = "";
-                // Ensure data is an array before calling forEach
-                if (Array.isArray(data)) {
-                    data.forEach(log => addRow(log));
-                } else {
-                    console.error("API returned non-array data:", data);
-                }
-            } else {
-                console.error("Failed to load activities:", res.status, await res.text());
-            }
-        } catch (error) {
-            console.error("Error loading activities:", error);
-        }
-    }
-
-    // Add row to table
-    function addRow(log) {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-            <td>${log.user}</td>
-            <td>${log.activity_name}</td>
-            <td>${log.duration}</td>
-            <td>${new Date(log.timestamp).toLocaleString()}</td>
-        `;
-        tableBody.prepend(row);
-    }
-
-    // ✅ WebSocket for real-time updates
-    const ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
-    const chatSocket = new WebSocket(
-        ws_scheme + '://' + window.location.host + '/ws/activities/?token=' + currentToken
-    );
-
-    chatSocket.onopen = () => {
-        console.log("✅ WebSocket connected!");
-    };
-
-    chatSocket.onerror = (e) => {
-        console.error("❌ WebSocket error:", e);
-    };
-
-    chatSocket.onclose = (e) => {
-        console.log("🔌 WebSocket closed:", e);
-    };
-
-    chatSocket.onmessage = function(event) {
-        console.log("📨 WebSocket message:", event.data);
-        try {
-            const msg = JSON.parse(event.data);
-
-            if (msg.type === "activity") {
-                console.log("🎯 New activity received:", msg.data);
-                addRow(msg.data);
-            } else if (msg.type === "connection") {
-                console.log("🔗 Connection status:", msg.message, "Authenticated:", msg.authenticated);
-            }
-        } catch (e) {
-            console.error("❌ Error parsing WebSocket message:", e);
-        }
-    };
-
-    // ✅ Handle activity form submit
-    document.getElementById("activityForm").addEventListener("submit", async function(e) {
-        e.preventDefault();
-
-        const name = document.getElementById("activityName").value;
-        const duration = document.getElementById("duration").value;
-
-        const response = await fetch("/api/activities/", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Token " + getToken()
-            },
-            body: JSON.stringify({ activity_name: name, duration: duration })
-        });
-
-        if (response.ok) {
-            document.getElementById("activityName").value = "";
-            document.getElementById("duration").value = "";
-            console.log("✅ Activity logged!");
-        } else {
-            console.error("❌ Failed to log activity", await response.text());
-        }
-    });
-
-    // 🔄 Initial load
-    loadActivities();
-    </script>
-
+    
+    <!-- Custom JS -->
+    <script src="{% static 'activity/js/script.js' %}"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    
 </body>
 </html>
