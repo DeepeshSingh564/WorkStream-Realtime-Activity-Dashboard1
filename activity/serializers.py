@@ -7,4 +7,4 @@ class ActivityLogSerializer(serializers.ModelSerializer):
   
   class Meta:
     model = ActivityLog
-    fields = ['id', 'user', 'activity_name', 'duration', 'timestamp']
+    fields = ['id', 'user', 'activity_name', 'duration', 'timestamp', 'status']

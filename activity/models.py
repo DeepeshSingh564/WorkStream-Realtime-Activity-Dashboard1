@@ -8,6 +8,7 @@ class ActivityLog(models.Model):
   activity_name = models.CharField(max_length=100)# e.g., "coding", "meeting"
   duration = models.IntegerField()#in minutes
   timestamp = models.DateTimeField(auto_now_add=True)
+  status = models.CharField(max_length=20, default="pending")
 
   def __str__(self):
     return f"{self.user.username} - {self.activity_name} ({self.duration}mins) "

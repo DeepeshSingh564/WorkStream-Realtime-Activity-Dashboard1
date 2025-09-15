@@ -6,19 +6,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WorkStream: Realtime Activity Dashboard</title>
+    
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'activity/css/dashboard.css' %}">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
 </head>
 <body>
+    <div class="premium-bg-effect"></div>
+    <div class="noise-texture"></div>
+
     <div class="container-fluid py-4">
-        <header class="dashboard-header d-flex justify-content-between align-items-center mb-4 pb-3">
+        <header class="dashboard-header d-flex justify-content-between align-items-center">
             <div class="header-content">
-                <h1 class="header-title mb-1">WorkStream</h1>
-                <p class="subtitle m-0">Realtime Activity Dashboard</p>
+                <h1 class="header-title mb-2">WorkStream</h1>
+                <p class="subtitle m-0">Realtime Activity Dashboard • Live Tracking & Analytics</p>
             </div>
             <button id="logoutBtn" class="logout-btn">
                 <i class="fas fa-sign-out-alt"></i>
@@ -29,29 +38,32 @@
         <div class="row">
             <div class="col-lg-4 col-md-5 mb-4">
                 <div class="glass-card p-4 h-100">
-                    <h2 class="mb-4">Log New Activity</h2>
-                    <form id="activityForm">
-                        <div class="form-group">
-                            <input type="text" class="form-control" id="activityName" placeholder=" " required>
-                            <label class="form-label" for="activityName">Activity name</label>
-                        </div>
-                        <div class="form-group">
-                            <input type="number" class="form-control" id="duration" placeholder=" " required>
-                            <label class="form-label" for="duration">Duration (minutes)</label>
-                        </div>
-                        <button type="submit" class="submit-btn">
-                            <i class="fas fa-plus-circle"></i>
-                            Add Activity
-                        </button>
-                    </form>
+                    <div class="form-container">
+                        <h2><i class="fas fa-plus-circle"></i>Log New Activity</h2>
+                        <form id="activityForm">
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="activityName" placeholder=" " required>
+                                <label class="form-label" for="activityName">Activity name</label>
+                            </div>
+                            <div class="form-group">
+                                <input type="number" class="form-control" id="duration" placeholder=" " required min="1">
+                                <label class="form-label" for="duration">Duration (minutes)</label>
+                            </div>
+                            <button type="submit" class="submit-btn">
+                                <i class="fas fa-rocket me-2"></i>
+                                Add Activity
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
 
             <div class="col-lg-8 col-md-7">
                 <div class="glass-card p-4 h-100">
                     <div class="table-header">
-                        <h2>Live Activities</h2>
+                        <h2><i class="fas fa-chart-line"></i>Live Activities</h2>
                         <div class="table-controls">
+                            <i class="fas fa-database"></i>
                             <span id="activityCount">0 activities</span>
                         </div>
                     </div>
@@ -60,15 +72,21 @@
                             <table class="table table-hover">
                                 <thead>
                                     <tr>
-                                        <th>User</th>
-                                        <th>Activity</th>
-                                        <th>Duration</th>
-                                        <th>Timestamp</th>
-                                        <th>Status</th>
+                                        <th><i class="fas fa-user me-2"></i>User</th>
+                                        <th><i class="fas fa-tasks me-2"></i>Activity</th>
+                                        <th><i class="fas fa-clock me-2"></i>Duration</th>
+                                        <th><i class="fas fa-calendar me-2"></i>Timestamp</th>
+                                        <th><i class="fas fa-signal me-2"></i>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody id="activityTable">
-                                    <!-- Activities will be populated here -->
+                                    <tr class="empty-state">
+                                        <td colspan="5">
+                                            <i class="fas fa-inbox"></i>
+                                            <h3>No activities yet</h3>
+                                            <p>Start logging your activities to see them appear here in real-time</p>
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -78,12 +96,22 @@
         </div>
     </div>
 
+    <!-- Success Feedback Toast -->
+    <div id="successFeedback" class="success-feedback">
+        <div class="success-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <span class="success-text">Activity logged successfully!</span>
+    </div>
+
     
-    <!-- Custom JS -->
-    <script src="{% static 'activity/js/script.js' %}"></script>
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    
+
+        <!-- Custom JS -->
+        <script src="{% static 'activity/js/script.js' %}"></script>
+        <!-- Bootstrap JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
+    
+    
