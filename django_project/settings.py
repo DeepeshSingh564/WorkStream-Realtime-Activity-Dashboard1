@@ -20,15 +20,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-4ju2n@$f9d0c=h)_g0lbb%k9&@rf(xa$d$g$&5ri$uf)*gev^4'
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-4ju2n@$f9d0c=h)_g0lbb%k9&@rf(xa$d$g$&5ri$uf)*gev^4')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'false').lower() == 'true'
 
-ALLOWED_HOSTS = os.environ["REPLIT_DOMAINS"].split(',') + ['127.0.0.1', 'localhost']
-CSRF_TRUSTED_ORIGINS = [
-    "https://" + domain for domain in os.environ["REPLIT_DOMAINS"].split(',')
-]
+# Host configuration for Replit and local development
+replit_domains = [d for d in os.getenv("REPLIT_DOMAINS", "").split(',') if d]
+ALLOWED_HOSTS = replit_domains + ['127.0.0.1', 'localhost']
+CSRF_TRUSTED_ORIGINS = [f"https://{d}" for d in replit_domains] + ["http://127.0.0.1:5000", "http://localhost:5000"]
 
 
 REST_FRAMEWORK = {
@@ -109,26 +109,30 @@ MIDDLEWARE = [
 ]
 
 # CORS settings for API requests
-CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5000",
-    "http://127.0.0.1:5000",
-]
+if "REPLIT_DEPLOYMENT" in os.environ:
+    # Production: restrict CORS to Replit domains
+    CORS_ALLOW_ALL_ORIGINS = False
+    CORS_ALLOWED_ORIGINS = [f"https://{d}" for d in replit_domains]
+    # Production security settings
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+else:
+    # Development: allow all origins for testing
+    CORS_ALLOW_ALL_ORIGINS = True
+    CORS_ALLOWED_ORIGINS = [
+        "http://localhost:5000",
+        "http://127.0.0.1:5000",
+    ]
+    # Development security settings
+    CSRF_COOKIE_SECURE = False
+    SESSION_COOKIE_SECURE = False
 
-# CSRF trusted origins
-CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:5000",
-    "http://127.0.0.1:5000",
-]
+# Allow JavaScript access to CSRF token
+CSRF_COOKIE_HTTPONLY = False
 
-# Allow CSRF for Replit domains
-CSRF_COOKIE_SECURE = False  # Set to True in production with HTTPS
-CSRF_COOKIE_HTTPONLY = False  # Allow JavaScript access to CSRF token
-
-# Only use clickjacking protection in deployments because the Development Web View uses
-# iframes and needs to be a cross origin.
-if ("REPLIT_DEPLOYMENT" in os.environ):
-    MIDDLEWARE.append('django.middleware.clickjacking.XFrameOptionsMiddleware')
+# Note: XFrameOptionsMiddleware is already included in MIDDLEWARE above
+# No need to conditionally append it
 
 ROOT_URLCONF = 'django_project.urls'
 
