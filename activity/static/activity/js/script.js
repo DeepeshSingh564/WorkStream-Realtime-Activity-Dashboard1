@@ -43,10 +43,12 @@
   function addRow(log) {
       const row = document.createElement("tr");
       row.classList.add("activity-row");
-      // Status badge
+      // Status badge - handle pending, active, and other statuses
       let statusHtml = "";
       if (log.status === "active") {
           statusHtml = `<span class="status-indicator status-active">Active</span>`;
+      } else if (log.status === "pending") {
+          statusHtml = `<span class="status-indicator status-pending">Pending</span>`;
       } else {
           statusHtml = `<span class="status-indicator status-inactive">Inactive</span>`;
       }
