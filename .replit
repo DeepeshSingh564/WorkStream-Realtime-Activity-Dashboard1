@@ -3,8 +3,8 @@ modules = ["web", "nodejs-20", "python-3.10"]
 run = "redis-server --port 6379 & python3 -m daphne -b 0.0.0.0 -p 3000 django_project.asgi:application"
 
 [deployment]
-run = "redis-server --port 6379 & python3 -m daphne -b 0.0.0.0 -p 3000 django_project.asgi:application"
-deploymentTarget = "gce"
+run = ["daphne", "-b", "0.0.0.0", "-p", "5000", "django_project.asgi:application"]
+deploymentTarget = "autoscale"
 
 [[ports]]
 localPort = 3000
