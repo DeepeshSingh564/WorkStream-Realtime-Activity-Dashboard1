@@ -105,8 +105,12 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# Only use clickjacking protection in production deployments
+# Development Web View uses iframes and needs to be displayed
+if "REPLIT_DEPLOYMENT" in os.environ:
+    MIDDLEWARE.append('django.middleware.clickjacking.XFrameOptionsMiddleware')
 
 # CORS settings for API requests
 if "REPLIT_DEPLOYMENT" in os.environ:
