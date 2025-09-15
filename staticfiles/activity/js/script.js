@@ -42,13 +42,33 @@
   // Add row to table
   function addRow(log) {
       const row = document.createElement("tr");
+      row.classList.add("activity-row");
+      // Status badge
+      let statusHtml = "";
+      if (log.status === "active") {
+          statusHtml = `<span class="status-indicator status-active">Active</span>`;
+      } else {
+          statusHtml = `<span class="status-indicator status-inactive">Inactive</span>`;
+      }
       row.innerHTML = `
-          <td>${log.user}</td>
+          <td><span class="user-badge">${log.user}</span></td>
           <td>${log.activity_name}</td>
-          <td>${log.duration}</td>
+          <td>${log.duration} mins</td>
           <td>${new Date(log.timestamp).toLocaleString()}</td>
+          <td>${statusHtml}</td>
       `;
       tableBody.prepend(row);
+  }
+  
+// success feedback function
+  function showSuccessFeedback() {
+      const successFeedback = document.getElementById('successFeedback');
+      successFeedback.classList.add('show');
+
+      // Auto-hide after 3 seconds
+      setTimeout(() => {
+          successFeedback.classList.remove('show');
+      }, 3000);
   }
 
   // ✅ WebSocket for real-time updates
@@ -105,15 +125,19 @@
           document.getElementById("activityName").value = "";
           document.getElementById("duration").value = "";
           console.log("✅ Activity logged!");
+          showSuccessFeedback();
       } else {
           console.error("❌ Failed to log activity", await response.text());
       }
   });
-      // Logout button functionality
-      document.getElementById('logoutBtn').addEventListener('click', function() {
-          // Your logout logic here
-          console.log('Logout clicked');
-      });
+  // Logout button handler
+  document.getElementById('logoutBtn').addEventListener('click', function() {
+      if (confirm('Are you sure you want to logout?')) {
+         // Handle logout logic here
+          localStorage.removeItem(tokenKey);
+         window.location.href = '/login/'; // redirect to login page
+     }
+  });
 
   // 🔄 Initial load
   loadActivities();
