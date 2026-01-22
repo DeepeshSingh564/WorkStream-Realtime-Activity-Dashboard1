@@ -25,17 +25,20 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-4ju2n@$f9d0c=h)_g0lbb%k9&@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'false').lower() == 'true'
 
-
 ALLOWED_HOSTS = ["*"]
 
 USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://workstream-realtime-activity-dashboard1.onrender.com",
+]
 # ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 
 # if not ALLOWED_HOSTS or ALLOWED_HOSTS == [""]:
 #     ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
-CSRF_TRUSTED_ORIGINS = [f"https://{d}" for d in replit_domains] + ["http://127.0.0.1:5000", "http://localhost:5000"]
 
 
 REST_FRAMEWORK = {
@@ -115,30 +118,13 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
 ]
 
-# Only use clickjacking protection in production deployments
-# Development Web View uses iframes and needs to be displayed
-if "REPLIT_DEPLOYMENT" in os.environ:
-    MIDDLEWARE.append('django.middleware.clickjacking.XFrameOptionsMiddleware')
+
 
 # CORS settings for API requests
-if "REPLIT_DEPLOYMENT" in os.environ:
-    # Production: restrict CORS to Replit domains
-    CORS_ALLOW_ALL_ORIGINS = False
-    CORS_ALLOWED_ORIGINS = [f"https://{d}" for d in replit_domains]
-    # Production security settings
-    CSRF_COOKIE_SECURE = True
-    SESSION_COOKIE_SECURE = True
-    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-else:
-    # Development: allow all origins for testing
-    CORS_ALLOW_ALL_ORIGINS = True
-    CORS_ALLOWED_ORIGINS = [
-        "http://localhost:5000",
-        "http://127.0.0.1:5000",
-    ]
-    # Development security settings
-    CSRF_COOKIE_SECURE = False
-    SESSION_COOKIE_SECURE = False
+CORS_ALLOW_ALL_ORIGINS = True
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_HTTPONLY = False
 
 # Allow JavaScript access to CSRF token
 CSRF_COOKIE_HTTPONLY = False
