@@ -25,9 +25,13 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-4ju2n@$f9d0c=h)_g0lbb%k9&@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'false').lower() == 'true'
 
-# Host configuration for Replit and local development
-replit_domains = [d for d in os.getenv("REPLIT_DOMAINS", "").split(',') if d]
-ALLOWED_HOSTS = replit_domains + ['127.0.0.1', 'localhost']
+
+ALLOWED_HOSTS = ["*"]
+# ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
+
+# if not ALLOWED_HOSTS or ALLOWED_HOSTS == [""]:
+#     ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+
 CSRF_TRUSTED_ORIGINS = [f"https://{d}" for d in replit_domains] + ["http://127.0.0.1:5000", "http://localhost:5000"]
 
 
@@ -145,6 +149,8 @@ ROOT_URLCONF = 'django_project.urls'
 STATIC_URL = "/static/"
 # STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
 
 TEMPLATES = [
     {
