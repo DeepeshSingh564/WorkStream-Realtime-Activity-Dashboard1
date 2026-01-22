@@ -27,6 +27,9 @@ DEBUG = os.getenv('DEBUG', 'false').lower() == 'true'
 
 
 ALLOWED_HOSTS = ["*"]
+
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 # ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 
 # if not ALLOWED_HOSTS or ALLOWED_HOSTS == [""]:
