@@ -19,3 +19,7 @@ replit.md
 # OS junk
 .DS_Store
 Thumbs.db
+
+
+#helper scripts
+run_dev.py
