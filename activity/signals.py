@@ -1,18 +1,13 @@
-# from django.db.models.signals import post_save
-# from django.dispatch import receiver
-# from .models import ActivityLog
-# from asgiref.sync import async_to_sync
-# from channels.layers import get_channel_layer
-# import json
+"""
+Signals are intentionally not used for WebSocket broadcasting.
 
+Reason:
+- Broadcasting activity updates requires access to the authenticated user
+- Django signals are implicit and harder to debug
+- Broadcasting is handled explicitly in the API view (perform_create)
 
-# @receiver(post_save, sender=ActivityLog)
-# def broadcast_activity(sender, instance, created, **kwargs):
-#   if created:
-#     channel_layer = get_channel_layer()
-#     async_to_sync(channel_layer.group_send)(
-#       "activities",{
-#         "type":"activity_message",
-#         "message": f"{instance.user.username} did {instance.activity_name} ({instance.duration} mins)"
-#       }
-#     )
+This file is kept for future extensibility:
+- background tasks
+- analytics hooks
+- audit logging
+"""
