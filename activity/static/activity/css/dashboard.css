@@ -1,7 +1,7 @@
 :root {
     --dark-bg: #0f172a;
     --darker-bg: #0a0e1c;
-    --card-bg: rgba(30, 41, 59, 0.95);
+    --card-bg: rgba(15, 23, 42, 0.92);
     --card-border: rgba(255, 255, 255, 0.08);
     --primary: #6366f1;
     --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
@@ -64,10 +64,10 @@ body {
     border: 1px solid var(--card-border);
     border-radius: 20px;
     box-shadow: 
-        0 15px 30px rgba(0, 0, 0, 0.2),
+        0 25px 50px rgba(0, 0, 0, 0.2),
         0 0 0 1px rgba(255, 255, 255, 0.05) inset;
-    backdrop-filter: blur(3px);
-    -webkit-backdrop-filter: blur(3px);
+    backdrop-filter: blur(1px);
+    -webkit-backdrop-filter: blur(1px);
     position: relative;
     overflow: hidden;
     transition: all 0.3s ease;
@@ -314,7 +314,7 @@ body {
 }
 
 .table {
-    background: rgba(15, 23, 42, 0.7);
+    background: #0f172a;
     border-radius: 16px;
     overflow: hidden;
     margin: 0;
@@ -331,6 +331,8 @@ body {
     text-transform: uppercase;
     letter-spacing: 0.05em;
     white-space: nowrap;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
 }
 
 .table tbody td {
@@ -343,15 +345,20 @@ body {
 
 .table tbody tr {
     transition: all 0.3s ease;
+    background: rgba(15, 23, 42, 0.95);
 }
 
 .table tbody tr:hover {
-    background: rgba(30, 41, 59, 0.6);
+    background: rgba(30, 41, 59, 0.85);
 }
 
 .table tbody tr:last-child td {
     border-bottom: none;
 }
+.table tbody tr:not(:last-child) {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
 
 /* Animation for new rows */
 @keyframes fadeInUp {
@@ -576,4 +583,9 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
     background: rgba(99, 102, 241, 0.7);
+}
+
+.table-container {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
 }

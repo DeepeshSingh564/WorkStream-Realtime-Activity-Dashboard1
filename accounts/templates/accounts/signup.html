@@ -1,29 +1,32 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Sign Up</title>
+  <link rel="stylesheet" href="{% static 'accounts/css/auth.css' %}">
 </head>
 <body>
-  <h2>Sign Up</h2>
-  {% csrf_token %}
-  <form id="signupForm">
-      <label>Username:
-        <input type="text"  id="username" required><br><br>
-      </label><br>
-      
-      <label>Email:
-        <input type="email" id="email" required><br><br>
-      </label><br>
-      
-      <label>Password:
-          <input type="password" id="password" required><br><br>
-        </label><br>
+  <div class="auth-container">
+    <h2>Create Account</h2>
 
-    <button type="submit">Sign Up</button>
-  </form>
+    <form id="signupForm">
+      {% csrf_token %}
 
-  <p>Already have an account? <a href="/login/">Login here</a></p>
+      <input type="text" id="username" placeholder="Username" required>
+      <input type="email" id="email" placeholder="Email" required>
+      <input type="password" id="password" placeholder="Password" required>
+
+      <button type="submit">Sign Up</button>
+    </form>
+
+    <p class="switch">
+      Already have an account?
+      <a href="/login/">Login</a>
+    </p>
+
+    <p id="message"></p>
+  </div>
 
   <script>
     document.getElementById("signupForm").addEventListener("submit", async (e) => {
@@ -33,27 +36,34 @@
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
 
-      // Get CSRF token
-      const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+      const csrfToken =
+        document.querySelector("[name=csrfmiddlewaretoken]")?.value || "";
 
       const response = await fetch("/api/signup/", {
         method: "POST",
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
-          "X-CSRFToken": csrfToken
+          "X-CSRFToken": csrfToken,
         },
-        body: JSON.stringify({ username, email, password })
+        body: JSON.stringify({ username, email, password }),
       });
+
+      const msg = document.getElementById("message");
 
       if (response.ok) {
         const data = await response.json();
-        alert("✅ Signup successful! Welcome, " + data.username);
-        localStorage.setItem("token", data.token); // save token
-        window.location.href = "/activity/dashboard/";
+        localStorage.setItem("token", data.token);
+        msg.style.color = "green";
+        msg.innerText = "Signup successful! Redirecting...";
+        setTimeout(() => {
+          window.location.href = "/activity/dashboard/";
+        }, 800);
       } else {
-        alert("❌ Signup failed: " + (await response.text()));
+        msg.style.color = "red";
+        msg.innerText = "Signup failed. Try again.";
       }
     });
   </script>
 </body>
 </html>
+

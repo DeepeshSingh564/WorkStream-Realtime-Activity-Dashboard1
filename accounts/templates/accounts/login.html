@@ -1,23 +1,31 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Login</title>
+  <link rel="stylesheet" href="{% static 'accounts/css/auth.css' %}">
 </head>
 <body>
-  <h2>Login</h2>
-  {% csrf_token %}
-  <form id="loginForm">
-    <label>Username:</label><br>
-    <input type="text" id="username" required><br><br>
+  <div class="auth-container">
+    <h2>Login</h2>
 
-    <label>Password:</label><br>
-    <input type="password" id="password" required><br><br>
+    <form id="loginForm">
+      {% csrf_token %}
 
-    <button type="submit">Login</button>
-  </form>
+      <input type="text" id="username" placeholder="Username" required>
+      <input type="password" id="password" placeholder="Password" required>
 
-  <p>Don’t have an account? <a href="/signup/">Sign up here</a></p>
+      <button type="submit">Login</button>
+    </form>
+
+    <p class="switch">
+      Don’t have an account?
+      <a href="/signup/">Sign up</a>
+    </p>
+
+    <p id="message"></p>
+  </div>
 
   <script>
     document.getElementById("loginForm").addEventListener("submit", async (e) => {
@@ -26,25 +34,31 @@
       const username = document.getElementById("username").value;
       const password = document.getElementById("password").value;
 
-      // Get CSRF token
-      const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+      const csrfToken =
+        document.querySelector("[name=csrfmiddlewaretoken]")?.value || "";
 
       const response = await fetch("/api/login/", {
         method: "POST",
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
-          "X-CSRFToken": csrfToken
+          "X-CSRFToken": csrfToken,
         },
-        body: JSON.stringify({ username, password })
+        body: JSON.stringify({ username, password }),
       });
+
+      const msg = document.getElementById("message");
 
       if (response.ok) {
         const data = await response.json();
-        alert("✅ Login successful! Welcome, " + data.username);
-        localStorage.setItem("token", data.token); // save token
-        window.location.href = "/activity/dashboard/";
+        localStorage.setItem("token", data.token);
+        msg.style.color = "green";
+        msg.innerText = "Login successful! Redirecting...";
+        setTimeout(() => {
+          window.location.href = "/activity/dashboard/";
+        }, 800);
       } else {
-        alert("❌ Login failed: " + (await response.text()));
+        msg.style.color = "red";
+        msg.innerText = "Invalid credentials.";
       }
     });
   </script>

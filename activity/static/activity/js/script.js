@@ -38,6 +38,7 @@
           console.error("Error loading activities:", error);
       }
   }
+  
 
   // Add row to table
   function addRow(log) {
@@ -60,6 +61,7 @@
           <td>${statusHtml}</td>
       `;
       tableBody.prepend(row);
+      updateActivityCount();
   }
   
 // success feedback function
@@ -143,3 +145,15 @@
 
   // 🔄 Initial load
   loadActivities();
+  updateActivityCount();
+
+
+  function updateActivityCount() {
+  const rows = document.querySelectorAll(".activity-row");
+  const countEl = document.getElementById("activity-count");
+
+  if (!countEl) return;
+
+  const count = rows.length;
+  countEl.innerText = `${count} activities`;
+}
