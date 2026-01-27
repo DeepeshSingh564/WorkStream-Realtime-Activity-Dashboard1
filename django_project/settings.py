@@ -82,28 +82,23 @@ CHANNEL_LAYERS = {
 }
 
 # Use Redis if available, fallback to InMemory
-try:
-    import redis
-    r = redis.Redis(host='127.0.0.1', port=6379, decode_responses=True)
-    r.ping()
-    # If Redis is available, use it
+USE_REDIS = os.getenv("USE_REDIS", "false").lower() == "true"
+
+if USE_REDIS:
     CHANNEL_LAYERS = {
         "default": {
             "BACKEND": "channels_redis.core.RedisChannelLayer",
             "CONFIG": {
-                "hosts": [("127.0.0.1", 6379)],
+                "hosts": [os.getenv("REDIS_URL")],
             },
         },
     }
-    print("✅ Using Redis for channels")
-except Exception as e:
-    print(f"⚠️ Redis not available ({e}), using InMemory channels")
+else:
     CHANNEL_LAYERS = {
         "default": {
             "BACKEND": "channels.layers.InMemoryChannelLayer",
         },
     }
-
 
 
 
