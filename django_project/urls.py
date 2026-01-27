@@ -19,6 +19,8 @@ from django.urls import path, include
 from django.http import HttpResponse
 from django.conf import settings
 from django.conf.urls.static import static
+from django_project.health import health_check
+
 
 
 
@@ -30,6 +32,7 @@ urlpatterns = [
     path("activity/", include("activity.urls")),  # Activity pages (dashboard, etc)
     path('api-auth/', include('rest_framework.urls')),
     path("", include("accounts.urls")),  # Account pages (signup page, login page, home)
+    path('health/', health_check),  # Health check endpoint
     
     
 ]
